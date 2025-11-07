@@ -14,48 +14,84 @@ export default function CheckoutPage() {
   const [kitchen, setKitchen] = useState<CloudKitchen | null>(null)
   const [loading, setLoading] = useState(false)
   const [isSubscription, setIsSubscription] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     // Check if this is subscription mode
     setIsSubscription(searchParams.get("mode") === "subscription")
 
-    // Get order data from sessionStorage
-    const storedOrderData = sessionStorage.getItem('orderData')
-    if (storedOrderData) {
+    const initializeCheckout = async () => {
       try {
-        const data = JSON.parse(storedOrderData)
+        let data = null
+
+        // Get order data from sessionStorage (client-side only)
+        if (typeof window !== 'undefined') {
+          const storedOrderData = sessionStorage.getItem('orderData')
+          if (storedOrderData) {
+            data = JSON.parse(storedOrderData)
+          }
+        }
+
+        // Fallback to search params for backward compatibility
+        if (!data) {
+          const items = searchParams.get("items")
+          if (items) {
+            const cartItems = JSON.parse(items)
+            data = {
+              items: cartItems,
+              subtotal: cartItems.reduce((sum: number, c: any) => sum + c.item.price * c.quantity, 0),
+              deliveryFee: 2.99,
+              platformFee: 2.50,
+              total: 0,
+              kitchenId: cartItems[0]?.item?.restaurantId || 'kitchen_1' // fallback kitchen ID
+            }
+          }
+        }
+
+        if (!data) {
+          setError('No order data found. Please add items to your cart first.')
+          return
+        }
+
         setOrderData(data)
 
-        // Load kitchen details
-        loadKitchen(data.kitchenId)
-      } catch (error) {
-        console.error('Error parsing order data:', error)
-        router.push('/')
-      }
-    } else {
-      // Fallback to search params for backward compatibility
-      const items = searchParams.get("items")
-      if (items) {
-        try {
-          const cartItems = JSON.parse(items)
-          setOrderData({
-            items: cartItems,
-            subtotal: cartItems.reduce((sum: number, c: any) => sum + c.item.price * c.quantity, 0),
-            deliveryFee: 2.99,
-            platformFee: 2.50,
-            total: 0
-          })
-        } catch (error) {
-          console.error('Error parsing items:', error)
+        // Load kitchen details if we have a kitchenId
+        if (data.kitchenId) {
+          const kitchenData = await getCloudKitchenById(data.kitchenId)
+          if (kitchenData) {
+            setKitchen(kitchenData)
+          } else {
+            console.warn('Kitchen not found, using fallback data')
+            // Create a fallback kitchen object
+            setKitchen({
+              id: data.kitchenId,
+              name: 'Cloud Kitchen',
+              deliveryFee: data.deliveryFee || 2.99,
+              deliveryTime: 30,
+              minOrderAmount: 100,
+              cuisineType: ['Various'],
+              operatingHours: { open: '11:00', close: '23:00', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+              kitchenType: 'cloud_kitchen' as any,
+              image: '',
+              rating: 4.5,
+              address: 'Delivery Location',
+              coordinates: { lat: 0, lng: 0 },
+              description: 'Professional cloud kitchen',
+              businessLicense: '',
+              fssaiLicense: '',
+              subscriptionAvailable: true,
+              createdAt: new Date()
+            })
+          }
         }
+      } catch (error) {
+        console.error('Error initializing checkout:', error)
+        setError('Failed to load checkout data. Please try again.')
       }
     }
-  }, [searchParams, router])
 
-  const loadKitchen = async (kitchenId: string) => {
-    const kitchenData = await getCloudKitchenById(kitchenId)
-    setKitchen(kitchenData)
-  }
+    initializeCheckout()
+  }, [searchParams, router])
 
   const handleCheckout = async () => {
     if (!orderData || !kitchen) return
@@ -67,7 +103,9 @@ export default function CheckoutPage() {
       setLoading(false)
 
       // Clear sessionStorage
-      sessionStorage.removeItem('orderData')
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('orderData')
+      }
 
       if (isSubscription) {
         router.push('/orders?success=subscription')
@@ -75,6 +113,26 @@ export default function CheckoutPage() {
         router.push('/orders?success=order')
       }
     }, 2000)
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-red-800 mb-2">Checkout Error</h2>
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => router.push('/')}
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!orderData || !kitchen) {
@@ -103,6 +161,19 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Kitchen Info */}
+            <div className="bg-card border border-neutral-200 rounded-lg p-6">
+              <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                {kitchen.name}
+              </h2>
+              <div className="text-sm text-muted-foreground">
+                <p>{kitchen.cuisineType.join(", ")}</p>
+                <p>Min. Order: ₹{kitchen.minOrderAmount}</p>
+                <p>Delivery Time: {kitchen.deliveryTime} minutes</p>
+              </div>
+            </div>
+
             {/* Delivery Address */}
             <div className="bg-card border border-neutral-200 rounded-lg p-6">
               <h2 className="font-bold text-lg mb-4 flex items-center gap-2">

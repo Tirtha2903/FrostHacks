@@ -2,12 +2,68 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ShoppingCart, User, LogOut, Menu } from "lucide-react"
+import { ShoppingCart, User, LogOut, Menu, ChefHat, Truck, Shield } from "lucide-react"
 import { useState } from "react"
+import { useAuth } from "@/lib/auth-context"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function Header({ cartCount = 0 }: { cartCount?: number }) {
   const router = useRouter()
+  const { user, logout, isAuthenticated } = useAuth()
   const [showMenu, setShowMenu] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    router.push('/')
+  }
+
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case 'kitchen':
+        return <ChefHat className="w-4 h-4" />
+      case 'delivery':
+        return <Truck className="w-4 h-4" />
+      case 'admin':
+        return <Shield className="w-4 h-4" />
+      default:
+        return <User className="w-4 h-4" />
+    }
+  }
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case 'kitchen':
+        return 'Cloud Kitchen'
+      case 'delivery':
+        return 'Delivery Partner'
+      case 'admin':
+        return 'Administrator'
+      default:
+        return 'Customer'
+    }
+  }
+
+  const getDashboardRoute = (role: string) => {
+    switch (role) {
+      case 'kitchen':
+        return '/kitchen'
+      case 'delivery':
+        return '/delivery'
+      case 'admin':
+        return '/admin'
+      default:
+        return '/orders'
+    }
+  }
 
   return (
     <header className="bg-white border-b border-neutral-200 sticky top-0 z-50">
@@ -25,27 +81,40 @@ export default function Header({ cartCount = 0 }: { cartCount?: number }) {
           <Link href="/" className="text-foreground hover:text-primary transition-colors">
             Home
           </Link>
-          <Link href="/orders" className="text-foreground hover:text-primary transition-colors">
-            My Orders
-          </Link>
-          <Link href="/favorites" className="text-foreground hover:text-primary transition-colors">
-            Favorites
-          </Link>
+          {isAuthenticated && (
+            <>
+              <Link href={getDashboardRoute(user?.role || 'customer')} className="text-foreground hover:text-primary transition-colors">
+                Dashboard
+              </Link>
+              {user?.role === 'customer' && (
+                <>
+                  <Link href="/orders" className="text-foreground hover:text-primary transition-colors">
+                    My Orders
+                  </Link>
+                  <Link href="/favorites" className="text-foreground hover:text-primary transition-colors">
+                    Favorites
+                  </Link>
+                </>
+              )}
+            </>
+          )}
         </nav>
 
         {/* Right Actions */}
         <div className="flex items-center gap-6">
-          <Link
-            href="/cart"
-            className="relative flex items-center justify-center w-10 h-10 hover:bg-neutral-100 rounded-lg transition-colors"
-          >
-            <ShoppingCart className="w-6 h-6" />
-            {cartCount > 0 && (
-              <span className="absolute top-0 right-0 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {isAuthenticated && user?.role === 'customer' && (
+            <Link
+              href="/cart"
+              className="relative flex items-center justify-center w-10 h-10 hover:bg-neutral-100 rounded-lg transition-colors"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           <button
             onClick={() => setShowMenu(!showMenu)}
@@ -54,15 +123,65 @@ export default function Header({ cartCount = 0 }: { cartCount?: number }) {
             <Menu className="w-6 h-6" />
           </button>
 
-          <div className="hidden md:flex items-center gap-3 pl-6 border-l border-neutral-200">
-            <div className="flex items-center justify-center w-10 h-10 bg-secondary rounded-lg">
-              <User className="w-5 h-5 text-white" />
+          {/* User Section */}
+          {isAuthenticated && user ? (
+            <div className="hidden md:flex items-center gap-3 pl-6 border-l border-neutral-200">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground flex items-center gap-1">
+                        {getRoleIcon(user.role)}
+                        {getRoleLabel(user.role)}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push(getDashboardRoute(user.role))}>
+                    Dashboard
+                  </DropdownMenuItem>
+                  {user.role === 'customer' && (
+                    <>
+                      <DropdownMenuItem onClick={() => router.push('/orders')}>
+                        My Orders
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push('/favorites')}>
+                        Favorites
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={() => router.push('/profile')}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <div className="text-sm">
-              <p className="font-medium">John</p>
-              <p className="text-xs text-muted-foreground">Customer</p>
+          ) : (
+            <div className="hidden md:flex items-center gap-3 pl-6 border-l border-neutral-200">
+              <Button variant="ghost" onClick={() => router.push('/auth/login')}>
+                Login
+              </Button>
+              <Button onClick={() => router.push('/auth/register')}>
+                Sign Up
+              </Button>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -73,16 +192,36 @@ export default function Header({ cartCount = 0 }: { cartCount?: number }) {
             <Link href="/" className="text-foreground hover:text-primary transition-colors py-2">
               Home
             </Link>
-            <Link href="/orders" className="text-foreground hover:text-primary transition-colors py-2">
-              My Orders
-            </Link>
-            <Link href="/favorites" className="text-foreground hover:text-primary transition-colors py-2">
-              Favorites
-            </Link>
-            <button className="text-foreground hover:text-primary transition-colors py-2 text-left flex items-center gap-2">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
+            {isAuthenticated && user ? (
+              <>
+                <Link href={getDashboardRoute(user.role)} className="text-foreground hover:text-primary transition-colors py-2">
+                  Dashboard
+                </Link>
+                {user.role === 'customer' && (
+                  <>
+                    <Link href="/orders" className="text-foreground hover:text-primary transition-colors py-2">
+                      My Orders
+                    </Link>
+                    <Link href="/favorites" className="text-foreground hover:text-primary transition-colors py-2">
+                      Favorites
+                    </Link>
+                  </>
+                )}
+                <button onClick={handleLogout} className="text-foreground hover:text-primary transition-colors py-2 text-left flex items-center gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" className="text-foreground hover:text-primary transition-colors py-2">
+                  Login
+                </Link>
+                <Link href="/auth/register" className="text-foreground hover:text-primary transition-colors py-2">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}

@@ -1,13 +1,17 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Store, MapPin, Clock, FileText, Users, CheckCircle, AlertCircle } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
 
 interface KitchenRegistrationProps {
-  onSuccess: () => void
+  onSuccess?: () => void
 }
 
 export default function KitchenRegistration({ onSuccess }: KitchenRegistrationProps) {
+  const router = useRouter()
+  const { register } = useAuth()
   const [formData, setFormData] = useState({
     // Basic Information
     kitchenName: "",
@@ -106,11 +110,33 @@ export default function KitchenRegistration({ onSuccess }: KitchenRegistrationPr
     e.preventDefault()
     setLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Create user with kitchen role
+      const userData = {
+        name: formData.ownerName,
+        email: formData.email,
+        phone: formData.phone,
+        password: 'tempPassword123', // In production, you would collect this during registration
+        role: 'kitchen' as const,
+        kitchenName: formData.kitchenName,
+        kitchenAddress: `${formData.address}, ${formData.area}, ${formData.city} - ${formData.pincode}`,
+        fssaiLicense: formData.fssaiLicense,
+        gstNumber: formData.gstNumber,
+        cuisine: formData.cuisineTypes
+      }
+
+      const success = await register(userData)
+      if (success) {
+        router.push('/kitchen')
+        onSuccess?.()
+      } else {
+        alert('Registration failed. Please try again.')
+      }
+    } catch (error) {
+      alert('An error occurred during registration. Please try again.')
+    } finally {
       setLoading(false)
-      onSuccess()
-    }, 2000)
+    }
   }
 
   const canProceed = () => {

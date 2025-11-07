@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { dummyOrders, dummyCloudKitchens, dummyUsers } from "@/lib/dummy-data"
 import AdminHeader from "@/components/admin-header"
+import { useAuth } from "@/lib/auth-context"
+import { Shield, AlertCircle } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   BarChart,
@@ -22,6 +24,21 @@ import {
 import { Users, DollarSign, Package, CheckCircle } from "lucide-react"
 
 export default function AdminPage() {
+  const { user } = useAuth()
+
+  // Authentication check
+  if (!user || user.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+          <p className="text-gray-600">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    )
+  }
+
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalRevenue: 0,

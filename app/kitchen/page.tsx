@@ -7,10 +7,26 @@ import KitchenHeader from "@/components/kitchen-header"
 import OrderBoardColumn from "@/components/order-board-column"
 import KitchenStats from "@/components/kitchen-stats"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useAuth } from "@/lib/auth-context"
+import { AlertCircle, ChefHat } from "lucide-react"
 
 export default function KitchenPage() {
+  const { user } = useAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [view, setView] = useState<"board" | "list">("board")
+
+  // Authentication check
+  if (!user || (user.role !== 'kitchen' && user.role !== 'admin')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <ChefHat className="mx-auto h-12 w-12 text-red-500 mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+          <p className="text-gray-600">You need kitchen access to view this page.</p>
+        </div>
+      </div>
+    )
+  }
 
   useEffect(() => {
     // Simulate kitchen getting orders for their restaurant (rest_1)
