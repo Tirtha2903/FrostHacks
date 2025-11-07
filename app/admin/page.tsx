@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { dummyOrders, dummyRestaurants, dummyUsers } from "@/lib/dummy-data"
+import { dummyOrders, dummyCloudKitchens, dummyUsers } from "@/lib/dummy-data"
 import AdminHeader from "@/components/admin-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -66,10 +66,10 @@ export default function AdminPage() {
   ]
 
   // Restaurant performance
-  const restaurantData = dummyRestaurants.map((r) => ({
+  const restaurantData = dummyCloudKitchens.map((r) => ({
     name: r.name.split(" ")[0],
-    orders: dummyOrders.filter((o) => o.restaurantId === r.id).length,
-    revenue: dummyOrders.filter((o) => o.restaurantId === r.id).reduce((sum, o) => sum + o.total, 0),
+    orders: dummyOrders.filter((o) => o.kitchenId === r.id).length,
+    revenue: dummyOrders.filter((o) => o.kitchenId === r.id).reduce((sum, o) => sum + o.total, 0),
   }))
 
   return (
@@ -257,7 +257,7 @@ export default function AdminPage() {
             <tbody>
               {dummyOrders.slice(0, 10).map((order) => {
                 const customer = dummyUsers.find((u) => u.id === order.customerId)
-                const restaurant = dummyRestaurants.find((r) => r.id === order.restaurantId)
+                const restaurant = dummyCloudKitchens.find((r) => r.id === order.kitchenId)
                 return (
                   <tr key={order.id} className="border-b border-neutral-200 hover:bg-secondary/5 transition-colors">
                     <td className="px-6 py-4 font-mono text-xs">#{order.id.split("_")[1]}</td>

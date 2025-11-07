@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import type { Restaurant, MenuItem } from "@/lib/types"
-import { getRestaurantById, getMenuItems } from "@/lib/api"
+import type { CloudKitchen, MenuItem } from "@/lib/types"
+import { getCloudKitchenById, getMenuItems } from "@/lib/api"
 import Header from "@/components/header"
 import CartSidebar from "@/components/cart-sidebar"
 import { Star, MapPin, Clock, ChevronLeft } from "lucide-react"
@@ -13,7 +13,7 @@ export default function RestaurantPage() {
   const router = useRouter()
   const restaurantId = params.id as string
 
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
+  const [restaurant, setRestaurant] = useState<CloudKitchen | null>(null)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [cart, setCart] = useState<{ item: MenuItem; quantity: number; specialInstructions?: string }[]>([])
@@ -21,9 +21,9 @@ export default function RestaurantPage() {
 
   useEffect(() => {
     const loadRestaurantData = async () => {
-      const restaurantData = await getRestaurantById(restaurantId)
-      if (restaurantData) {
-        setRestaurant(restaurantData)
+      const kitchenData = await getCloudKitchenById(restaurantId)
+      if (kitchenData) {
+        setRestaurant(kitchenData)
         const items = await getMenuItems(restaurantId)
         setMenuItems(items)
 

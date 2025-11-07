@@ -1,4 +1,4 @@
-import type { User, Restaurant, MenuItem, Order, DeliveryPartner } from "./types"
+import type { User, CloudKitchen, MenuItem, Order, DeliveryPartner } from "./types"
 
 // Dummy Users
 export const dummyUsers: User[] = [
@@ -40,81 +40,131 @@ export const dummyUsers: User[] = [
   },
 ]
 
-// Dummy Restaurants
-export const dummyRestaurants: Restaurant[] = [
+// Dummy Cloud Kitchens
+export const dummyCloudKitchens: CloudKitchen[] = [
   {
-    id: "rest_1",
-    name: "La Bella Italia",
-    description: "Authentic Italian cuisine with fresh pasta and wood-fired pizza",
-    image: "/italian-restaurant-pasta.jpg",
+    id: "kitchen_1",
+    name: "Pasta Perfect Cloud Kitchen",
+    description: "Specialized Italian cloud kitchen with authentic pasta and pizza, optimized for delivery",
+    image: "/italian-cloud-kitchen.jpg",
     rating: 4.8,
-    deliveryTime: 30,
-    deliveryFee: 2.99,
+    deliveryTime: 25,
+    deliveryFee: 2.49,
     cuisineType: ["Italian", "Pizza", "Pasta"],
-    address: "123 Main St, Downtown",
+    address: "123 Commercial St, Kitchen Hub",
     coordinates: { lat: 40.7128, lng: -74.006 },
+    kitchenType: "cloud_kitchen",
+    businessLicense: "BL2024001",
+    fssaiLicense: "FSSAI/1234567890",
+    operatingHours: {
+      open: "11:00",
+      close: "23:00",
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    },
+    minOrderAmount: 150,
+    subscriptionAvailable: true,
     createdAt: new Date("2023-05-10"),
   },
   {
-    id: "rest_2",
-    name: "Dragon Bowl",
-    description: "Asian fusion with ramen, sushi, and authentic stir-fry",
-    image: "/asian-fusion-restaurant.jpg",
+    id: "kitchen_2",
+    name: "Asian Wok Home Kitchen",
+    description: "Home-based Asian cuisine specialist focusing on fresh ramen and stir-fry dishes",
+    image: "/home-asian-kitchen.jpg",
     rating: 4.6,
-    deliveryTime: 25,
-    deliveryFee: 2.49,
-    cuisineType: ["Asian", "Ramen", "Sushi"],
-    address: "456 Park Ave, Midtown",
+    deliveryTime: 30,
+    deliveryFee: 2.99,
+    cuisineType: ["Asian", "Ramen", "Thai"],
+    address: "456 Residential Area, Home Kitchen Zone",
     coordinates: { lat: 40.758, lng: -73.9855 },
+    kitchenType: "home_office",
+    businessLicense: "HL2024002",
+    fssaiLicense: "FSSAI/0987654321",
+    operatingHours: {
+      open: "12:00",
+      close: "22:00",
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    },
+    minOrderAmount: 200,
+    subscriptionAvailable: true,
     createdAt: new Date("2023-08-15"),
   },
   {
-    id: "rest_3",
-    name: "Burger Junction",
-    description: "Premium burgers, fries, and milkshakes",
-    image: "/burger-restaurant.jpg",
-    rating: 4.5,
+    id: "kitchen_3",
+    name: "Burger Box Cloud Kitchen",
+    description: "Premium burger cloud kitchen with gourmet ingredients and fast preparation",
+    image: "/burger-cloud-kitchen.jpg",
+    rating: 4.7,
     deliveryTime: 20,
     deliveryFee: 1.99,
     cuisineType: ["Burgers", "American", "Fast Food"],
-    address: "789 Oak Rd, Uptown",
+    address: "789 Industrial Area, Food Park",
     coordinates: { lat: 40.7505, lng: -73.9972 },
+    kitchenType: "cloud_kitchen",
+    businessLicense: "BL2024003",
+    fssaiLicense: "FSSAI/1122334455",
+    operatingHours: {
+      open: "10:00",
+      close: "00:00",
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    },
+    minOrderAmount: 100,
+    subscriptionAvailable: false,
     createdAt: new Date("2024-01-20"),
   },
   {
-    id: "rest_4",
-    name: "Spice of India",
-    description: "Authentic Indian curries, tandoori, and biryani",
-    image: "/indian-restaurant.jpg",
-    rating: 4.7,
+    id: "kitchen_4",
+    name: "Curry Express Hybrid",
+    description: "Hybrid kitchen model offering both cloud kitchen efficiency and home-cooked authenticity",
+    image: "/curry-hybrid-kitchen.jpg",
+    rating: 4.9,
     deliveryTime: 35,
-    deliveryFee: 3.99,
-    cuisineType: ["Indian", "Curry", "Tandoori"],
-    address: "321 Maple Ln, Village",
+    deliveryFee: 3.49,
+    cuisineType: ["Indian", "Curry", "Biryani"],
+    address: "321 Mixed Zone, Kitchen Complex",
     coordinates: { lat: 40.7614, lng: -73.9776 },
+    kitchenType: "both",
+    businessLicense: "HL2024004",
+    fssaiLicense: "FSSAI/5544332211",
+    operatingHours: {
+      open: "11:30",
+      close: "23:30",
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    },
+    minOrderAmount: 250,
+    subscriptionAvailable: true,
     createdAt: new Date("2023-11-05"),
   },
   {
-    id: "rest_5",
-    name: "Taco Fiesta",
-    description: "Fresh Mexican street tacos and authentic salsas",
-    image: "/mexican-taco-restaurant.jpg",
-    rating: 4.4,
+    id: "kitchen_5",
+    name: "Healthy Bowl Office Kitchen",
+    description: "Office-focused healthy meal prep kitchen with nutritious bowls and salads",
+    image: "/healthy-office-kitchen.jpg",
+    rating: 4.5,
     deliveryTime: 22,
     deliveryFee: 2.49,
-    cuisineType: ["Mexican", "Tacos", "Street Food"],
-    address: "654 Elm St, Arts District",
+    cuisineType: ["Healthy", "Salads", "Mediterranean"],
+    address: "654 Business Park, Office Kitchen Hub",
     coordinates: { lat: 40.7282, lng: -73.7949 },
+    kitchenType: "home_office",
+    businessLicense: "OL2024005",
+    fssaiLicense: "FSSAI/9988776655",
+    operatingHours: {
+      open: "07:00",
+      close: "21:00",
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    },
+    minOrderAmount: 180,
+    subscriptionAvailable: true,
     createdAt: new Date("2023-12-01"),
   },
 ]
 
 // Dummy Menu Items
 export const dummyMenuItems: MenuItem[] = [
-  // La Bella Italia
+  // Pasta Perfect Cloud Kitchen
   {
     id: "item_1",
-    restaurantId: "rest_1",
+    restaurantId: "kitchen_1",
     name: "Margherita Pizza",
     description: "Fresh mozzarella, basil, and tomato sauce on crispy crust",
     image: "/margherita-pizza.png",
@@ -126,7 +176,7 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_2",
-    restaurantId: "rest_1",
+    restaurantId: "kitchen_1",
     name: "Fettuccine Alfredo",
     description: "Creamy parmesan sauce with fresh pasta",
     image: "/fettuccine-alfredo.jpg",
@@ -138,7 +188,7 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_3",
-    restaurantId: "rest_1",
+    restaurantId: "kitchen_1",
     name: "Lasagna Bolognese",
     description: "Layered pasta with rich meat sauce and bechamel",
     image: "/classic-lasagna.png",
@@ -149,10 +199,10 @@ export const dummyMenuItems: MenuItem[] = [
     createdAt: new Date(),
   },
 
-  // Dragon Bowl
+  // Asian Wok Home Kitchen
   {
     id: "item_4",
-    restaurantId: "rest_2",
+    restaurantId: "kitchen_2",
     name: "Tonkotsu Ramen",
     description: "Rich pork bone broth with tender chashu pork",
     image: "/ramen-bowl.jpg",
@@ -164,22 +214,22 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_5",
-    restaurantId: "rest_2",
-    name: "California Roll",
-    description: "Crab, avocado, cucumber with sesame seeds",
-    image: "/sushi-roll.jpg",
+    restaurantId: "kitchen_2",
+    name: "Thai Green Curry",
+    description: "Spicy coconut curry with vegetables and basil",
+    image: "/thai-green-curry.jpg",
     price: 12.99,
-    category: "Sushi",
+    category: "Thai",
     available: true,
-    vegetarian: false,
+    vegetarian: true,
     createdAt: new Date(),
   },
   {
     id: "item_6",
-    restaurantId: "rest_2",
-    name: "Vegetable Tempura",
-    description: "Assorted vegetables in light crispy batter",
-    image: "/crispy-tempura.png",
+    restaurantId: "kitchen_2",
+    name: "Vegetable Spring Rolls",
+    description: "Crispy rolls with fresh vegetables",
+    image: "/spring-rolls.jpg",
     price: 10.99,
     category: "Appetizers",
     available: true,
@@ -187,10 +237,10 @@ export const dummyMenuItems: MenuItem[] = [
     createdAt: new Date(),
   },
 
-  // Burger Junction
+  // Burger Box Cloud Kitchen
   {
     id: "item_7",
-    restaurantId: "rest_3",
+    restaurantId: "kitchen_3",
     name: "Classic Cheeseburger",
     description: "Beef patty, cheddar, lettuce, tomato, pickles",
     image: "/classic-cheeseburger.png",
@@ -202,7 +252,7 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_8",
-    restaurantId: "rest_3",
+    restaurantId: "kitchen_3",
     name: "Double Bacon Burger",
     description: "Two patties with crispy bacon and special sauce",
     image: "/bacon-burger.jpg",
@@ -214,21 +264,21 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_9",
-    restaurantId: "rest_3",
-    name: "French Fries",
-    description: "Crispy golden fries with seasoning",
-    image: "/crispy-french-fries.png",
-    price: 4.99,
+    restaurantId: "kitchen_3",
+    name: "Loaded French Fries",
+    description: "Crispy fries with cheese, bacon, and sauce",
+    image: "/loaded-fries.jpg",
+    price: 6.99,
     category: "Sides",
     available: true,
-    vegetarian: true,
+    vegetarian: false,
     createdAt: new Date(),
   },
 
-  // Spice of India
+  // Curry Express Hybrid
   {
     id: "item_10",
-    restaurantId: "rest_4",
+    restaurantId: "kitchen_4",
     name: "Butter Chicken",
     description: "Tender chicken in creamy tomato sauce",
     image: "/butter-chicken-curry.jpg",
@@ -240,7 +290,7 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_11",
-    restaurantId: "rest_4",
+    restaurantId: "kitchen_4",
     name: "Paneer Tikka",
     description: "Marinated cottage cheese grilled with spices",
     image: "/paneer-tikka.png",
@@ -252,7 +302,7 @@ export const dummyMenuItems: MenuItem[] = [
   },
   {
     id: "item_12",
-    restaurantId: "rest_4",
+    restaurantId: "kitchen_4",
     name: "Chicken Biryani",
     description: "Fragrant basmati rice with tender chicken",
     image: "/flavorful-biryani.png",
@@ -263,29 +313,41 @@ export const dummyMenuItems: MenuItem[] = [
     createdAt: new Date(),
   },
 
-  // Taco Fiesta
+  // Healthy Bowl Office Kitchen
   {
     id: "item_13",
-    restaurantId: "rest_5",
-    name: "Carne Asada Tacos",
-    description: "Grilled marinated beef with cilantro and onions",
-    image: "/delicious-tacos.png",
-    price: 10.99,
-    category: "Tacos",
+    restaurantId: "kitchen_5",
+    name: "Mediterranean Bowl",
+    description: "Quinoa, roasted vegetables, feta, and olives",
+    image: "/mediterranean-bowl.jpg",
+    price: 12.99,
+    category: "Healthy Bowls",
     available: true,
-    vegetarian: false,
+    vegetarian: true,
     createdAt: new Date(),
   },
   {
     id: "item_14",
-    restaurantId: "rest_5",
-    name: "Vegetarian Tacos",
-    description: "Roasted vegetables with fresh guacamole",
-    image: "/vegetarian-tacos.jpg",
+    restaurantId: "kitchen_5",
+    name: "Greek Salad",
+    description: "Fresh vegetables with feta cheese and olive oil dressing",
+    image: "/greek-salad.jpg",
     price: 9.99,
-    category: "Tacos",
+    category: "Salads",
     available: true,
     vegetarian: true,
+    createdAt: new Date(),
+  },
+  {
+    id: "item_15",
+    restaurantId: "kitchen_5",
+    name: "Protein Power Bowl",
+    description: "Grilled chicken, brown rice, avocado, and superfoods",
+    image: "/protein-bowl.jpg",
+    price: 14.99,
+    category: "Healthy Bowls",
+    available: true,
+    vegetarian: false,
     createdAt: new Date(),
   },
 ]
@@ -295,7 +357,8 @@ export const dummyOrders: Order[] = [
   {
     id: "order_1",
     customerId: "user_1",
-    restaurantId: "rest_1",
+    kitchenId: "kitchen_1",
+    orderType: "onetime",
     items: [
       { menuItemId: "item_1", name: "Margherita Pizza", quantity: 1, price: 14.99 },
       { menuItemId: "item_2", name: "Fettuccine Alfredo", quantity: 2, price: 16.99 },
@@ -303,42 +366,77 @@ export const dummyOrders: Order[] = [
     status: "delivered",
     subtotal: 48.97,
     deliveryFee: 2.99,
-    total: 51.96,
+    platformFee: 2.50,
+    total: 54.46,
     deliveryPartner: "user_3",
     estimatedDeliveryTime: new Date(Date.now() + 30 * 60000),
+    deliveryAddress: {
+      street: "123 Main St",
+      area: "Downtown",
+      city: "Mumbai",
+      pincode: "400001",
+      coordinates: { lat: 40.7128, lng: -74.006 }
+    },
+    priorityDelivery: false,
     createdAt: new Date(Date.now() - 2 * 3600000),
     updatedAt: new Date(Date.now() - 1000000),
   },
   {
     id: "order_2",
     customerId: "user_1",
-    restaurantId: "rest_2",
+    kitchenId: "kitchen_2",
+    orderType: "weekly",
+    subscriptionDetails: {
+      startDate: new Date(Date.now() - 7 * 24 * 3600000),
+      endDate: new Date(Date.now() + 21 * 24 * 3600000),
+      deliveryDays: ["Mon", "Wed", "Fri"],
+      mealTimes: ["lunch"]
+    },
     items: [
       { menuItemId: "item_4", name: "Tonkotsu Ramen", quantity: 1, price: 13.99 },
-      { menuItemId: "item_6", name: "Vegetable Tempura", quantity: 1, price: 10.99 },
+      { menuItemId: "item_6", name: "Vegetable Spring Rolls", quantity: 1, price: 10.99 },
     ],
     status: "in_transit",
     subtotal: 24.98,
-    deliveryFee: 2.49,
-    total: 27.47,
+    deliveryFee: 2.99,
+    platformFee: 2.00,
+    total: 29.97,
     deliveryPartner: "user_3",
     estimatedDeliveryTime: new Date(Date.now() + 15 * 60000),
+    deliveryAddress: {
+      street: "456 Park Ave",
+      area: "Midtown",
+      city: "Mumbai",
+      pincode: "400002",
+      coordinates: { lat: 40.758, lng: -73.9855 }
+    },
+    priorityDelivery: true,
     createdAt: new Date(Date.now() - 20 * 60000),
     updatedAt: new Date(Date.now() - 5 * 60000),
   },
   {
     id: "order_3",
     customerId: "user_1",
-    restaurantId: "rest_3",
+    kitchenId: "kitchen_3",
+    orderType: "onetime",
     items: [
       { menuItemId: "item_7", name: "Classic Cheeseburger", quantity: 2, price: 11.99 },
-      { menuItemId: "item_9", name: "French Fries", quantity: 1, price: 4.99 },
+      { menuItemId: "item_9", name: "Loaded French Fries", quantity: 1, price: 6.99 },
     ],
     status: "preparing",
-    subtotal: 28.97,
+    subtotal: 30.97,
     deliveryFee: 1.99,
-    total: 30.96,
+    platformFee: 2.00,
+    total: 34.96,
     estimatedDeliveryTime: new Date(Date.now() + 40 * 60000),
+    deliveryAddress: {
+      street: "789 Oak Rd",
+      area: "Uptown",
+      city: "Mumbai",
+      pincode: "400003",
+      coordinates: { lat: 40.7505, lng: -73.9972 }
+    },
+    priorityDelivery: false,
     createdAt: new Date(Date.now() - 5 * 60000),
     updatedAt: new Date(Date.now() - 2 * 60000),
   },
@@ -349,11 +447,73 @@ export const dummyDeliveryPartners: DeliveryPartner[] = [
   {
     id: "delivery_1",
     userId: "user_3",
+    name: "Raj Kumar",
+    phone: "+91 9876543210",
     rating: 4.9,
     completedDeliveries: 847,
     isAvailable: true,
     currentLocation: { lat: 40.7128, lng: -74.006 },
-    vehicleType: "bike",
+    availableVehicles: ["motorcycle", "e_vehicle", "cycle"],
+    preferredVehicleType: "motorcycle",
     averageDeliveryTime: 24,
+    verifiedDocuments: {
+      aadharCard: true,
+      drivingLicense: true,
+      vehicleRegistration: true,
+      bankAccount: true
+    },
+    earnings: {
+      totalEarnings: 125000,
+      weeklyEarnings: 3500,
+      monthlyEarnings: 15000
+    }
+  },
+  {
+    id: "delivery_2",
+    userId: "user_5",
+    name: "Priya Sharma",
+    phone: "+91 9876543211",
+    rating: 4.7,
+    completedDeliveries: 523,
+    isAvailable: true,
+    currentLocation: { lat: 40.758, lng: -73.9855 },
+    availableVehicles: ["e_vehicle", "cycle", "public_transport"],
+    preferredVehicleType: "e_vehicle",
+    averageDeliveryTime: 28,
+    verifiedDocuments: {
+      aadharCard: true,
+      drivingLicense: true,
+      vehicleRegistration: true,
+      bankAccount: true
+    },
+    earnings: {
+      totalEarnings: 85000,
+      weeklyEarnings: 2800,
+      monthlyEarnings: 12000
+    }
+  },
+  {
+    id: "delivery_3",
+    userId: "user_6",
+    name: "Amit Patel",
+    phone: "+91 9876543212",
+    rating: 4.8,
+    completedDeliveries: 1205,
+    isAvailable: false,
+    currentLocation: { lat: 40.7505, lng: -73.9972 },
+    availableVehicles: ["motorcycle", "car"],
+    preferredVehicleType: "car",
+    averageDeliveryTime: 22,
+    verifiedDocuments: {
+      aadharCard: true,
+      drivingLicense: true,
+      vehicleRegistration: true,
+      bankAccount: true
+    },
+    earnings: {
+      totalEarnings: 180000,
+      weeklyEarnings: 4200,
+      monthlyEarnings: 18000
+    }
   },
 ]

@@ -10,7 +10,7 @@ export interface User {
   createdAt: Date
 }
 
-export interface Restaurant {
+export interface CloudKitchen {
   id: string
   name: string
   description: string
@@ -21,6 +21,16 @@ export interface Restaurant {
   cuisineType: string[]
   address: string
   coordinates: { lat: number; lng: number }
+  kitchenType: "cloud_kitchen" | "home_office" | "both"
+  businessLicense: string
+  fssaiLicense: string
+  operatingHours: {
+    open: string
+    close: string
+    days: string[]
+  }
+  minOrderAmount: number
+  subscriptionAvailable: boolean
   createdAt: Date
 }
 
@@ -55,14 +65,30 @@ export interface CartItem {
 export interface Order {
   id: string
   customerId: string
-  restaurantId: string
+  kitchenId: string
   items: OrderItem[]
-  status: "pending" | "confirmed" | "preparing" | "ready" | "assigned" | "in_transit" | "delivered" | "cancelled"
+  orderType: "onetime" | "weekly" | "monthly"
+  subscriptionDetails?: {
+    startDate: Date
+    endDate: Date
+    deliveryDays: string[]
+    mealTimes: string[]
+  }
+  status: "pending" | "confirmed" | "preparing" | "ready" | "awaiting_delivery" | "assigned" | "in_transit" | "delivered" | "cancelled"
   subtotal: number
   deliveryFee: number
+  platformFee: number
   total: number
   deliveryPartner?: string
   estimatedDeliveryTime?: Date
+  deliveryAddress: {
+    street: string
+    area: string
+    city: string
+    pincode: string
+    coordinates?: { lat: number; lng: number }
+  }
+  priorityDelivery: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -81,8 +107,16 @@ export interface DeliveryBid {
   deliveryPartnerId: string
   bidAmount: number
   estimatedTime: number
-  status: "open" | "accepted" | "rejected"
+  vehicleType: "cycle" | "e_vehicle" | "motorcycle" | "public_transport" | "car"
+  deliveryRoute: {
+    distance: number
+    estimatedDuration: number
+    trafficCondition: "light" | "moderate" | "heavy"
+  }
+  status: "open" | "accepted" | "rejected" | "expired"
+  specialInstructions?: string
   createdAt: Date
+  expiresAt?: Date
 }
 
 export interface Subscription {
@@ -99,12 +133,26 @@ export interface Subscription {
 export interface DeliveryPartner {
   id: string
   userId: string
+  name: string
+  phone: string
   rating: number
   completedDeliveries: number
   isAvailable: boolean
   currentLocation?: { lat: number; lng: number }
-  vehicleType: "bike" | "scooter" | "car"
+  availableVehicles: ("cycle" | "e_vehicle" | "motorcycle" | "public_transport" | "car")[]
+  preferredVehicleType: string
   averageDeliveryTime: number
+  verifiedDocuments: {
+    aadharCard: boolean
+    drivingLicense: boolean
+    vehicleRegistration: boolean
+    bankAccount: boolean
+  }
+  earnings: {
+    totalEarnings: number
+    weeklyEarnings: number
+    monthlyEarnings: number
+  }
 }
 
 export interface KitchenStats {

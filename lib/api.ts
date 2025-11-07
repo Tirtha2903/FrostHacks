@@ -1,18 +1,37 @@
 // Mock API functions for data retrieval
-import { dummyRestaurants, dummyMenuItems, dummyOrders, dummyUsers } from "./dummy-data"
+import { dummyCloudKitchens, dummyMenuItems, dummyOrders, dummyUsers, dummyDeliveryPartners } from "./dummy-data"
 
-// Restaurant APIs
-export async function getRestaurants() {
-  return dummyRestaurants
+// Cloud Kitchen APIs
+export async function getCloudKitchens() {
+  return dummyCloudKitchens
 }
 
-export async function getRestaurantById(id: string) {
-  return dummyRestaurants.find((r) => r.id === id)
+export async function getCloudKitchenById(id: string) {
+  return dummyCloudKitchens.find((k) => k.id === id)
+}
+
+// Delivery Partner APIs
+export async function getDeliveryPartners() {
+  return dummyDeliveryPartners
+}
+
+export async function getAvailableDeliveryPartners() {
+  return dummyDeliveryPartners.filter((dp) => dp.isAvailable)
+}
+
+export async function createDeliveryBid(bid: any) {
+  return {
+    id: `bid_${Date.now()}`,
+    ...bid,
+    status: "open",
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 5 * 60000) // 5 minutes expiry
+  }
 }
 
 // Menu APIs
-export async function getMenuItems(restaurantId: string) {
-  return dummyMenuItems.filter((item) => item.restaurantId === restaurantId)
+export async function getMenuItems(kitchenId: string) {
+  return dummyMenuItems.filter((item) => item.restaurantId === kitchenId)
 }
 
 export async function getMenuItemById(id: string) {

@@ -1,8 +1,8 @@
 "use client"
 
 import Header from "@/components/header"
-import RestaurantCard from "@/components/restaurant-card"
-import { dummyRestaurants } from "@/lib/dummy-data"
+import CloudKitchenCard from "@/components/cloud-kitchen-card"
+import { dummyCloudKitchens } from "@/lib/dummy-data"
 import { Heart } from "lucide-react"
 
 export default function FavoritesPage() {
@@ -18,8 +18,8 @@ export default function FavoritesPage() {
         <p className="text-muted-foreground mb-8">Your saved restaurants and quick reorder options</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dummyRestaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+          {dummyCloudKitchens.map((kitchen) => (
+            <CloudKitchenCard key={kitchen.id} kitchen={kitchen} />
           ))}
         </div>
       </div>
