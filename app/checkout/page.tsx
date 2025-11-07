@@ -3,36 +3,95 @@
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Header from "@/components/header"
-import { MapPin, CreditCard, Clock } from "lucide-react"
+import { MapPin, CreditCard, Clock, Users } from "lucide-react"
+import { getCloudKitchenById } from "@/lib/api"
+import type { CloudKitchen } from "@/lib/types"
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [cartItems, setCartItems] = useState<any[]>([])
+  const [orderData, setOrderData] = useState<any>(null)
+  const [kitchen, setKitchen] = useState<CloudKitchen | null>(null)
   const [loading, setLoading] = useState(false)
+  const [isSubscription, setIsSubscription] = useState(false)
 
   useEffect(() => {
-    const items = searchParams.get("items")
-    if (items) {
+    // Check if this is subscription mode
+    setIsSubscription(searchParams.get("mode") === "subscription")
+
+    // Get order data from sessionStorage
+    const storedOrderData = sessionStorage.getItem('orderData')
+    if (storedOrderData) {
       try {
-        setCartItems(JSON.parse(items))
-      } catch {
-        // Handle parse error
+        const data = JSON.parse(storedOrderData)
+        setOrderData(data)
+
+        // Load kitchen details
+        loadKitchen(data.kitchenId)
+      } catch (error) {
+        console.error('Error parsing order data:', error)
+        router.push('/')
+      }
+    } else {
+      // Fallback to search params for backward compatibility
+      const items = searchParams.get("items")
+      if (items) {
+        try {
+          const cartItems = JSON.parse(items)
+          setOrderData({
+            items: cartItems,
+            subtotal: cartItems.reduce((sum: number, c: any) => sum + c.item.price * c.quantity, 0),
+            deliveryFee: 2.99,
+            platformFee: 2.50,
+            total: 0
+          })
+        } catch (error) {
+          console.error('Error parsing items:', error)
+        }
       }
     }
-  }, [searchParams])
+  }, [searchParams, router])
 
-  const subtotal = cartItems.reduce((sum, c) => sum + c.item.price * c.quantity, 0)
-  const deliveryFee = 2.99
-  const tax = subtotal * 0.08
-  const total = subtotal + deliveryFee + tax
+  const loadKitchen = async (kitchenId: string) => {
+    const kitchenData = await getCloudKitchenById(kitchenId)
+    setKitchen(kitchenData)
+  }
 
   const handleCheckout = async () => {
+    if (!orderData || !kitchen) return
+
     setLoading(true)
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    router.push("/orders")
+
+    // Simulate order processing
+    setTimeout(() => {
+      setLoading(false)
+
+      // Clear sessionStorage
+      sessionStorage.removeItem('orderData')
+
+      if (isSubscription) {
+        router.push('/orders?success=subscription')
+      } else {
+        router.push('/orders?success=order')
+      }
+    }, 2000)
   }
+
+  if (!orderData || !kitchen) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading checkout...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const { subtotal, deliveryFee, platformFee, total } = orderData
+  const tax = subtotal * 0.08
+  const finalTotal = total + tax
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,17 +148,27 @@ export default function CheckoutPage() {
 
             {/* Order Items */}
             <div className="bg-card border border-neutral-200 rounded-lg p-6">
-              <h2 className="font-bold text-lg mb-4">Order Summary</h2>
+              <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+                {isSubscription && <Users className="w-5 h-5" />}
+                {isSubscription ? "Subscription Summary" : "Order Summary"}
+              </h2>
               <div className="space-y-3">
-                {cartItems.map((item) => (
-                  <div key={item.item.id} className="flex justify-between text-sm">
+                {orderData.items.map((item: any, index: number) => (
+                  <div key={index} className="flex justify-between text-sm">
                     <span>
-                      {item.quantity}x {item.item.name}
+                      {item.quantity}x {item.name}
                     </span>
-                    <span>${(item.item.price * item.quantity).toFixed(2)}</span>
+                    <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
+              {isSubscription && (
+                <div className="mt-4 p-3 bg-primary/10 rounded-lg">
+                  <p className="text-sm text-primary font-medium">
+                    🎉 Subscription mode activated! You'll save 15% on recurring orders.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -111,20 +180,29 @@ export default function CheckoutPage() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Platform Fee</span>
+                  <span>₹{platformFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Tax (8%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Delivery Fee</span>
-                  <span>${deliveryFee.toFixed(2)}</span>
+                  <span>₹{deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-neutral-200 pt-4 flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-primary">${total.toFixed(2)}</span>
+                  <span className="text-primary">₹{finalTotal.toFixed(2)}</span>
                 </div>
+                {isSubscription && (
+                  <div className="text-xs text-green-600 text-center">
+                    💰 Save 15% with subscription!
+                  </div>
+                )}
               </div>
 
               <button
@@ -132,7 +210,12 @@ export default function CheckoutPage() {
                 disabled={loading}
                 className="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
               >
-                {loading ? "Processing..." : "Complete Payment"}
+                {loading
+                  ? "Processing..."
+                  : isSubscription
+                    ? `Start Subscription • ₹${finalTotal.toFixed(2)}`
+                    : `Complete Payment • ₹${finalTotal.toFixed(2)}`
+                }
               </button>
 
               <p className="text-xs text-muted-foreground text-center mt-4">Your payment information is secure</p>

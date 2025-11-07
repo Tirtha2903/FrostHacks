@@ -110,9 +110,12 @@ export default function RestaurantPage() {
               <ChevronLeft className="w-6 h-6" />
             </button>
             <img
-              src={restaurant.image || "/placeholder.svg"}
+              src={restaurant.image || "https://picsum.photos/seed/kitchen-header/800/400.jpg"}
               alt={restaurant.name}
               className="w-full h-64 object-cover"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/kitchen-fallback/800/400.jpg"
+              }}
             />
           </div>
 
@@ -165,8 +168,11 @@ export default function RestaurantPage() {
                   className="flex gap-4 p-4 border border-neutral-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   <img
-                    src={item.image || "/placeholder.svg"}
+                    src={item.image || "https://picsum.photos/seed/food-item/100/100.jpg"}
                     alt={item.name}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://picsum.photos/seed/food-placeholder/100/100.jpg"
+                    }}
                     className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
                   />
                   <div className="flex-1">
