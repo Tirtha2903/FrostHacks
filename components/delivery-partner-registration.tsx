@@ -1,7 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Bike, Car, Zap, Users, MapPin, Phone, Mail, FileText, CheckCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Progress } from "@/components/ui/progress"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Bike, Car, Zap, Users, MapPin, Phone, Mail, FileText, CheckCircle, AlertCircle, Upload, Shield, TrendingUp, ArrowRight, ArrowLeft, Star, DollarSign, Clock } from "lucide-react"
 
 interface DeliveryPartnerRegistrationProps {
   onSuccess: () => void
