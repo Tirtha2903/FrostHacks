@@ -5,7 +5,7 @@
   "regions": ["sin1"],
   "functions": {
     "app/**/*": {
-      "runtime": "nodejs20.x"
+      "runtime": "@vercel/node"
     }
   },
   "rewrites": [
