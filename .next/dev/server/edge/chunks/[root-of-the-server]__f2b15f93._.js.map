@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/middleware.ts"],"sourcesContent":["// Temporarily disable middleware for easier deployment\n// Authentication will be handled client-side only for now\n\nexport function middleware() {\n  // No middleware logic for deployment compatibility\n}\n\nexport const config = {\n  matcher: [], // Empty matcher disables middleware\n}"],"names":[],"mappings":"AAAA,uDAAuD;AACvD,0DAA0D;;;;;;;AAEnD,SAAS;AACd,mDAAmD;AACrD;AAEO,MAAM,SAAS;IACpB,SAAS,EAAE;AACb"}}]
+}
