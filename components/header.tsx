@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ShoppingCart, User, LogOut, Menu, ChefHat, Truck, Shield } from "lucide-react"
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
+import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -16,9 +17,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export default function Header({ cartCount = 0 }: { cartCount?: number }) {
+export default function Header() {
   const router = useRouter()
   const { user, logout, isAuthenticated } = useAuth()
+  const { getCartItemCount, setIsOpen } = useCart()
   const [showMenu, setShowMenu] = useState(false)
 
   const handleLogout = () => {
@@ -103,17 +105,17 @@ export default function Header({ cartCount = 0 }: { cartCount?: number }) {
         {/* Right Actions */}
         <div className="flex items-center gap-6">
           {isAuthenticated && user?.role === 'customer' && (
-            <Link
-              href="/cart"
+            <button
+              onClick={() => setIsOpen(true)}
               className="relative flex items-center justify-center w-10 h-10 hover:bg-neutral-100 rounded-lg transition-colors"
             >
               <ShoppingCart className="w-6 h-6" />
-              {cartCount > 0 && (
+              {getCartItemCount() > 0 && (
                 <span className="absolute top-0 right-0 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
+                  {getCartItemCount()}
                 </span>
               )}
-            </Link>
+            </button>
           )}
 
           <button

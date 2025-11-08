@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import type { CloudKitchen, MenuItem } from "@/lib/types"
 import { getCloudKitchenById, getMenuItems } from "@/lib/api"
 import Header from "@/components/header"
-import CloudCartSidebar from "@/components/cloud-cart-sidebar"
+import { useCart } from "@/lib/cart-context"
 import { Star, MapPin, Clock, ChevronLeft, Users, CheckCircle } from "lucide-react"
 
 export default function KitchenPage() {
@@ -16,9 +16,18 @@ export default function KitchenPage() {
   const [kitchen, setKitchen] = useState<CloudKitchen | null>(null)
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>("")
-  const [cart, setCart] = useState<{ item: MenuItem; quantity: number; specialInstructions?: string }[]>([])
   const [loading, setLoading] = useState(true)
-  const [showCart, setShowCart] = useState(false)
+
+  const {
+    cart,
+    addToCart: addToCartGlobal,
+    removeFromCart,
+    updateQuantity,
+    getCartItemCount,
+    kitchen: cartKitchen,
+    isOpen,
+    setIsOpen
+  } = useCart()
 
   useEffect(() => {
     const loadKitchenData = async () => {
@@ -39,47 +48,7 @@ export default function KitchenPage() {
   }, [kitchenId])
 
   const addToCart = (item: MenuItem, quantity = 1, instructions?: string) => {
-    const existingItem = cart.find((c) => c.item.id === item.id)
-
-    if (existingItem) {
-      setCart(
-        cart.map((c) =>
-          c.item.id === item.id
-            ? {
-                ...c,
-                quantity: c.quantity + quantity,
-                specialInstructions: instructions || c.specialInstructions,
-              }
-            : c
-        )
-      )
-    } else {
-      setCart([...cart, { item, quantity, specialInstructions: instructions }])
-    }
-  }
-
-  const removeFromCart = (itemId: string) => {
-    setCart(cart.filter((c) => c.item.id !== itemId))
-  }
-
-  const updateQuantity = (itemId: string, quantity: number) => {
-    if (quantity === 0) {
-      removeFromCart(itemId)
-    } else {
-      setCart(
-        cart.map((c) =>
-          c.item.id === itemId ? { ...c, quantity } : c
-        )
-      )
-    }
-  }
-
-  const getCartTotal = () => {
-    return cart.reduce((total, cartItem) => total + cartItem.item.price * cartItem.quantity, 0)
-  }
-
-  const getCartItemCount = () => {
-    return cart.reduce((total, cartItem) => total + cartItem.quantity, 0)
+    addToCartGlobal(item, quantity, instructions, kitchen || undefined)
   }
 
   const filteredItems = menuItems.filter((item) => item.category === selectedCategory)
@@ -211,7 +180,7 @@ export default function KitchenPage() {
 
           {/* Cart Button */}
           <button
-            onClick={() => setShowCart(true)}
+            onClick={() => setIsOpen(true)}
             className="ml-4 relative bg-primary text-white p-4 rounded-lg hover:bg-primary-dark transition-colors"
           >
             <div className="flex flex-col items-center">
@@ -311,15 +280,6 @@ export default function KitchenPage() {
         )}
       </div>
 
-      {/* Cart Sidebar */}
-      <CloudCartSidebar
-        cart={cart}
-        kitchen={kitchen}
-        onRemove={removeFromCart}
-        onUpdateQuantity={updateQuantity}
-        onClose={() => setShowCart(false)}
-        isOpen={showCart}
-      />
     </div>
   )
 }
